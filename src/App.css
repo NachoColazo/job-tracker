@@ -1,0 +1,115 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f4f5;
+  color: #18181b;
+}
+
+.container {
+  width: min(900px, 92%);
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.hero {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.hero h1 {
+  margin: 0 0 10px;
+  font-size: 40px;
+  font-weight: 800;
+  color: #18181b;
+}
+
+.hero p {
+  margin: 0;
+  color: #52525b;
+  font-size: 18px;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+  background: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d4d4d8;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+button {
+  border: none;
+  background: #18181b;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.list h2 {
+  margin-bottom: 12px;
+}
+
+.card {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  background: white;
+  padding: 18px;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.card h3 {
+  margin: 0 0 4px;
+}
+
+.card p {
+  margin: 0 0 8px;
+  color: #52525b;
+}
+
+.card span {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #e4e4e7;
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.notes {
+  margin-top: 10px !important;
+}
+
+.delete {
+  background: #991b1b;
+  align-self: start;
+}
+
+.empty {
+  color: #71717a;
+}
