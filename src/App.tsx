@@ -21,10 +21,19 @@ function App() {
   const [position, setPosition] = useState("");
   const [status, setStatus] = useState<JobApplication["status"]>("Applied");
   const [notes, setNotes] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState<
+  "All" | JobApplication["status"]
+>("All");
   
   useEffect(() => {
   localStorage.setItem("job-applications", JSON.stringify(applications));
 }, [applications]);
+
+  const filteredApplications =
+  statusFilter === "All"
+    ? applications
+    : applications.filter((application) => application.status === statusFilter);
 
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -104,16 +113,35 @@ function App() {
       <section className="list">
         <h2>Applications: {applications.length}</h2>
 
+      <div className="filter">
+  <label htmlFor="status-filter">Filter by status</label>
+
+  <select
+    id="status-filter"
+    value={statusFilter}
+    onChange={(event) =>
+      setStatusFilter(event.target.value as "All" | JobApplication["status"])
+    }
+  >
+    <option value="All">All</option>
+    <option value="Applied">Applied</option>
+    <option value="Interview">Interview</option>
+    <option value="Rejected">Rejected</option>
+    <option value="Offer">Offer</option>
+    <option value="Saved">Saved</option>
+  </select>
+</div>      
+
         {applications.length > 0 && (
           <button className="clear" onClick={clearAllApplications}>
             Clear all
           </button> 
         )}
 
-        {applications.length === 0 ? (
-          <p className="empty">No applications yet.</p>
+        {filteredApplications.length === 0 ? (
+          <p className="empty">No applications found.</p>
         ) : (
-          applications.map((application) => (
+          filteredApplications.map((application) => (
             <article className="card" key={application.id}>
               <div>
                 <h3>{application.company}</h3>

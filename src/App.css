@@ -113,3 +113,19 @@ button:hover {
 .empty {
   color: #71717a;
 }
+
+.filter {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter label {
+  font-weight: 700;
+  color: #3f3f46;
+}
+
+.filter select {
+  background: white;
+  color: #18181b;
+}
