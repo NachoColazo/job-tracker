@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
+/**
+ * Defines the shape of a job application in the app.
+ * Keeping this as a TypeScript type helps prevent invalid data,
+ * especially for the status field.
+ */
 type JobApplication = {
   id: number;
   company: string;
@@ -10,31 +15,57 @@ type JobApplication = {
 };
 
 function App() {
+  /**
+   * Load saved applications from the browser when the app starts.
+   * localStorage only stores strings, so saved data must be parsed back into an array.
+   */
   const [applications, setApplications] = useState<JobApplication[]>(() => {
-  const savedApplications = localStorage.getItem("job-applications");
+    const savedApplications = localStorage.getItem("job-applications");
 
-  return savedApplications ? JSON.parse(savedApplications) : [];
-});
+    return savedApplications ? JSON.parse(savedApplications) : [];
+  });
 
-
+  /**
+   * Form state.
+   * Each input is controlled by React, which means the displayed value
+   * always comes from state and updates through its setter function.
+   */
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
   const [status, setStatus] = useState<JobApplication["status"]>("Applied");
   const [notes, setNotes] = useState("");
 
+  /**
+   * Controls which applications are visible in the list.
+   * "All" is not a real application status, so we combine it with the valid status values.
+   */
   const [statusFilter, setStatusFilter] = useState<
-  "All" | JobApplication["status"]
->("All");
-  
+    "All" | JobApplication["status"]
+  >("All");
+
+  /**
+   * Persist applications every time the list changes.
+   * This keeps the data available after refreshing the page.
+   */
   useEffect(() => {
-  localStorage.setItem("job-applications", JSON.stringify(applications));
-}, [applications]);
+    localStorage.setItem("job-applications", JSON.stringify(applications));
+  }, [applications]);
 
+  /**
+   * Derived data: this does not need its own state.
+   * It is calculated from the current applications and selected filter.
+   */
   const filteredApplications =
-  statusFilter === "All"
-    ? applications
-    : applications.filter((application) => application.status === statusFilter);
+    statusFilter === "All"
+      ? applications
+      : applications.filter(
+          (application) => application.status === statusFilter,
+        );
 
+  /**
+   * Creates a new application from the current form values
+   * and adds it to the top of the list.
+   */
   function handleSubmit(event: React.SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -48,21 +79,32 @@ function App() {
 
     setApplications([newApplication, ...applications]);
 
+    // Reset the form after submitting.
     setCompany("");
     setPosition("");
     setStatus("Applied");
     setNotes("");
   }
 
+  /**
+   * Removes one application by keeping every item
+   * except the one that matches the selected id.
+   */
   function deleteApplication(id: number) {
-    setApplications(applications.filter((application) => application.id !== id));
+    setApplications(
+      applications.filter((application) => application.id !== id),
+    );
   }
 
+  /**
+   * Clears the full list only after user confirmation.
+   * This prevents accidentally deleting all saved applications.
+   */
   function clearAllApplications() {
-  if (window.confirm("Are you sure you want to clear all applications?")) {
-    setApplications([]);
+    if (window.confirm("Are you sure you want to clear all applications?")) {
+      setApplications([]);
+    }
   }
-}
 
   return (
     <main className="container">
@@ -113,29 +155,31 @@ function App() {
       <section className="list">
         <h2>Applications: {applications.length}</h2>
 
-      <div className="filter">
-  <label htmlFor="status-filter">Filter by status</label>
+        <div className="filter">
+          <label htmlFor="status-filter">Filter by status</label>
 
-  <select
-    id="status-filter"
-    value={statusFilter}
-    onChange={(event) =>
-      setStatusFilter(event.target.value as "All" | JobApplication["status"])
-    }
-  >
-    <option value="All">All</option>
-    <option value="Applied">Applied</option>
-    <option value="Interview">Interview</option>
-    <option value="Rejected">Rejected</option>
-    <option value="Offer">Offer</option>
-    <option value="Saved">Saved</option>
-  </select>
-</div>      
+          <select
+            id="status-filter"
+            value={statusFilter}
+            onChange={(event) =>
+              setStatusFilter(
+                event.target.value as "All" | JobApplication["status"],
+              )
+            }
+          >
+            <option value="All">All</option>
+            <option value="Applied">Applied</option>
+            <option value="Interview">Interview</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Offer">Offer</option>
+            <option value="Saved">Saved</option>
+          </select>
+        </div>
 
         {applications.length > 0 && (
           <button className="clear" onClick={clearAllApplications}>
             Clear all
-          </button> 
+          </button>
         )}
 
         {filteredApplications.length === 0 ? (
@@ -147,7 +191,9 @@ function App() {
                 <h3>{application.company}</h3>
                 <p>{application.position}</p>
                 <span>{application.status}</span>
-                {application.notes && <p className="notes">{application.notes}</p>}
+                {application.notes && (
+                  <p className="notes">{application.notes}</p>
+                )}
               </div>
 
               <button

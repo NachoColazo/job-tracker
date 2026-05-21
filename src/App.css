@@ -129,3 +129,8 @@ button:hover {
   background: white;
   color: #18181b;
 }
+
+.clear {
+  margin-bottom: 16px;
+  background: #3f3f46;
+}
