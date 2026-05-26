@@ -12,6 +12,7 @@ type JobApplication = {
   position: string;
   status: "Applied" | "Interview" | "Rejected" | "Offer" | "Saved";
   dateApplied: string;
+  jobLink: string;
   notes: string;
 };
 
@@ -35,6 +36,7 @@ function App() {
   const [position, setPosition] = useState("");
   const [status, setStatus] = useState<JobApplication["status"]>("Applied");
   const [dateApplied, setDateApplied] = useState("");
+  const [jobLink, setJobLink] = useState("");
   const [notes, setNotes] = useState("");
 
   /**
@@ -77,6 +79,7 @@ function App() {
       position,
       status,
       dateApplied,
+      jobLink,
       notes,
     };
 
@@ -87,6 +90,7 @@ function App() {
     setPosition("");
     setStatus("Applied");
     setDateApplied("");
+    setJobLink("");
     setNotes("");
   }
 
@@ -166,6 +170,13 @@ function App() {
           onChange={(event) => setDateApplied(event.target.value)}
         />
 
+        <input
+          type="url"
+          placeholder="Job link"
+          value={jobLink}
+          onChange={(event) => setJobLink(event.target.value)}
+        />
+
         <textarea
           placeholder="Notes"
           value={notes}
@@ -218,6 +229,16 @@ function App() {
                   <p className="date">
                     Applied on: {formatDate(application.dateApplied)}
                   </p>
+                )}
+                {application.jobLink && (
+                  <a
+                    className="job-link"
+                    href={application.jobLink}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    View job posting
+                  </a>
                 )}
                 {application.notes && (
                   <p className="notes">{application.notes}</p>
