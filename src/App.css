@@ -101,6 +101,14 @@ button:hover {
   font-size: 14px;
 }
 
+.card .date {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
 .notes {
   margin-top: 10px !important;
 }

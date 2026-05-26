@@ -11,6 +11,7 @@ type JobApplication = {
   company: string;
   position: string;
   status: "Applied" | "Interview" | "Rejected" | "Offer" | "Saved";
+  dateApplied: string;
   notes: string;
 };
 
@@ -33,6 +34,7 @@ function App() {
   const [company, setCompany] = useState("");
   const [position, setPosition] = useState("");
   const [status, setStatus] = useState<JobApplication["status"]>("Applied");
+  const [dateApplied, setDateApplied] = useState("");
   const [notes, setNotes] = useState("");
 
   /**
@@ -74,6 +76,7 @@ function App() {
       company,
       position,
       status,
+      dateApplied,
       notes,
     };
 
@@ -83,6 +86,7 @@ function App() {
     setCompany("");
     setPosition("");
     setStatus("Applied");
+    setDateApplied("");
     setNotes("");
   }
 
@@ -106,6 +110,19 @@ function App() {
     }
   }
 
+  function formatDate(dateString: string) {
+    const [year, month, day] = dateString.split("-");
+
+    return new Date(
+      Number(year),
+      Number(month) - 1,
+      Number(day),
+    ).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
   return (
     <main className="container">
       <section className="hero">
@@ -142,6 +159,12 @@ function App() {
           <option value="Offer">Offer</option>
           <option value="Saved">Saved</option>
         </select>
+
+        <input
+          type="date"
+          value={dateApplied}
+          onChange={(event) => setDateApplied(event.target.value)}
+        />
 
         <textarea
           placeholder="Notes"
@@ -191,6 +214,11 @@ function App() {
                 <h3>{application.company}</h3>
                 <p>{application.position}</p>
                 <span>{application.status}</span>
+                {application.dateApplied && (
+                  <p className="date">
+                    Applied on: {formatDate(application.dateApplied)}
+                  </p>
+                )}
                 {application.notes && (
                   <p className="notes">{application.notes}</p>
                 )}
