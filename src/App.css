@@ -71,6 +71,7 @@ button:hover {
 
 .list h2 {
   margin-bottom: 12px;
+  color: #18181b;
 }
 
 .card {
@@ -107,6 +108,12 @@ button:hover {
   font-size: 14px;
   font-weight: 600;
   color: #3f3f46;
+}
+
+.search {
+  width: 100%;
+  margin-bottom: 16px;
+  background: white;
 }
 
 .job-link {

@@ -48,6 +48,12 @@ function App() {
   >("All");
 
   /**
+   * Stores the current search text used to filter applications
+   * by company or position.
+   */
+  const [searchTerm, setSearchTerm] = useState("");
+
+  /**
    * Persist applications every time the list changes.
    * This keeps the data available after refreshing the page.
    */
@@ -57,14 +63,19 @@ function App() {
 
   /**
    * Derived data: this does not need its own state.
-   * It is calculated from the current applications and selected filter.
+   * It is calculated from the current applications, selected status filter,
+   * and search text.
    */
-  const filteredApplications =
-    statusFilter === "All"
-      ? applications
-      : applications.filter(
-          (application) => application.status === statusFilter,
-        );
+  const filteredApplications = applications.filter((application) => {
+    const matchesStatus =
+      statusFilter === "All" || application.status === statusFilter;
+
+    const matchesSearch =
+      application.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      application.position.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesStatus && matchesSearch;
+  });
 
   /**
    * Creates a new application from the current form values
@@ -187,7 +198,17 @@ function App() {
       </form>
 
       <section className="list">
-        <h2>Applications: {applications.length}</h2>
+        <h2>
+          Applications: {filteredApplications.length} of {applications.length}
+        </h2>
+
+        <input
+          className="search"
+          type="text"
+          placeholder="Search by company or position"
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
+        />
 
         <div className="filter">
           <label htmlFor="status-filter">Filter by status</label>
@@ -217,7 +238,7 @@ function App() {
         )}
 
         {filteredApplications.length === 0 ? (
-          <p className="empty">No applications found.</p>
+          <p className="empty">No applications match your filters.</p>
         ) : (
           filteredApplications.map((application) => (
             <article className="card" key={application.id}>
