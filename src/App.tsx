@@ -202,13 +202,25 @@ function App() {
           Applications: {filteredApplications.length} of {applications.length}
         </h2>
 
-        <input
-          className="search"
-          type="text"
-          placeholder="Search by company or position"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+        <div className="search-row">
+          <input
+            className="search"
+            type="text"
+            placeholder="Search by company or position"
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+
+          {searchTerm && (
+            <button
+              className="clear-search"
+              type="button"
+              onClick={() => setSearchTerm("")}
+            >
+              Clear
+            </button>
+          )}
+        </div>
 
         <div className="filter">
           <label htmlFor="status-filter">Filter by status</label>
