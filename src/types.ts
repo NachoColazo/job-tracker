@@ -12,3 +12,9 @@ export type JobApplication = {
   jobLink: string;
   notes: string;
 };
+
+/**
+ * Represents the available status filter values.
+ * "All" is used only for filtering and is not a real application status.
+ */
+export type StatusFilter = "All" | JobApplication["status"];

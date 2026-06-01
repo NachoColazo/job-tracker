@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import ApplicationCard from "./components/ApplicationCard";
-import type { JobApplication } from "./types";
+import FilterControls from "./components/FilterControls";
+import type { JobApplication, StatusFilter } from "./types";
 import "./App.css";
 
 function App() {
@@ -30,9 +31,7 @@ function App() {
    * Controls which applications are visible in the list.
    * "All" is not a real application status, so we combine it with the valid status values.
    */
-  const [statusFilter, setStatusFilter] = useState<
-    "All" | JobApplication["status"]
-  >("All");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("All");
 
   /**
    * Stores the current search text used to filter applications
@@ -176,48 +175,12 @@ function App() {
           Applications: {filteredApplications.length} of {applications.length}
         </h2>
 
-        <div className="search-row">
-          <input
-            className="search"
-            type="text"
-            placeholder="Search by company or position"
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
-
-          {searchTerm && (
-            <button
-              className="clear-search"
-              type="button"
-              onClick={() => setSearchTerm("")}
-              aria-label="Clear search"
-              title="Clear search"
-            >
-              ×
-            </button>
-          )}
-        </div>
-
-        <div className="filter">
-          <label htmlFor="status-filter">Filter by status</label>
-
-          <select
-            id="status-filter"
-            value={statusFilter}
-            onChange={(event) =>
-              setStatusFilter(
-                event.target.value as "All" | JobApplication["status"],
-              )
-            }
-          >
-            <option value="All">All</option>
-            <option value="Applied">Applied</option>
-            <option value="Interview">Interview</option>
-            <option value="Rejected">Rejected</option>
-            <option value="Offer">Offer</option>
-            <option value="Saved">Saved</option>
-          </select>
-        </div>
+        <FilterControls
+          searchTerm={searchTerm}
+          statusFilter={statusFilter}
+          onSearchChange={setSearchTerm}
+          onStatusFilterChange={setStatusFilter}
+        />
 
         {applications.length > 0 && (
           <button className="clear" onClick={clearAllApplications}>
