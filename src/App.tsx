@@ -1,20 +1,7 @@
 import { useEffect, useState } from "react";
+import ApplicationCard from "./components/ApplicationCard";
+import type { JobApplication } from "./types";
 import "./App.css";
-
-/**
- * Defines the shape of a job application in the app.
- * Keeping this as a TypeScript type helps prevent invalid data,
- * especially for the status field.
- */
-type JobApplication = {
-  id: number;
-  company: string;
-  position: string;
-  status: "Applied" | "Interview" | "Rejected" | "Offer" | "Saved";
-  dateApplied: string;
-  jobLink: string;
-  notes: string;
-};
 
 function App() {
   /**
@@ -125,19 +112,6 @@ function App() {
     }
   }
 
-  function formatDate(dateString: string) {
-    const [year, month, day] = dateString.split("-");
-
-    return new Date(
-      Number(year),
-      Number(month) - 1,
-      Number(day),
-    ).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-    });
-  }
   return (
     <main className="container">
       <section className="hero">
@@ -255,38 +229,11 @@ function App() {
           <p className="empty">No applications match your filters.</p>
         ) : (
           filteredApplications.map((application) => (
-            <article className="card" key={application.id}>
-              <div>
-                <h3>{application.company}</h3>
-                <p>{application.position}</p>
-                <span>{application.status}</span>
-                {application.dateApplied && (
-                  <p className="date">
-                    Applied on: {formatDate(application.dateApplied)}
-                  </p>
-                )}
-                {application.jobLink && (
-                  <a
-                    className="job-link"
-                    href={application.jobLink}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View job posting
-                  </a>
-                )}
-                {application.notes && (
-                  <p className="notes">{application.notes}</p>
-                )}
-              </div>
-
-              <button
-                className="delete"
-                onClick={() => deleteApplication(application.id)}
-              >
-                Delete
-              </button>
-            </article>
+            <ApplicationCard
+              key={application.id}
+              application={application}
+              onDelete={deleteApplication}
+            />
           ))
         )}
       </section>
