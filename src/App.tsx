@@ -216,8 +216,10 @@ function App() {
               className="clear-search"
               type="button"
               onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+              title="Clear search"
             >
-              Clear
+              ×
             </button>
           )}
         </div>

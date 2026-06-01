@@ -4,26 +4,33 @@
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f4f5;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  background: linear-gradient(180deg, #f8fafc 0%, #f4f4f5 100%);
   color: #18181b;
 }
 
 .container {
-  width: min(900px, 92%);
+  width: min(960px, 92%);
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 48px 0;
 }
 
 .hero {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   text-align: center;
 }
 
 .hero h1 {
   margin: 0 0 10px;
-  font-size: 40px;
+  font-size: clamp(32px, 5vw, 44px);
   font-weight: 800;
+  letter-spacing: -0.04em;
   color: #18181b;
 }
 
@@ -35,12 +42,19 @@ body {
 
 .form {
   display: grid;
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
   background: white;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 28px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 22px;
+  border-radius: 18px;
+  margin-bottom: 32px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
+.form input[type="url"],
+.form textarea,
+.form button {
+  grid-column: 1 / -1;
 }
 
 input,
@@ -48,9 +62,45 @@ select,
 textarea,
 button {
   font: inherit;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: 1px solid #d4d4d8;
+}
+
+input,
+select,
+textarea {
+  background: #3f3f3f;
+  color: #f8fafc;
+  border-color: #525252;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #a1a1aa;
+}
+
+.form select {
+  appearance: none;
+  color: #f8fafc;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%23f8fafc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 42px;
+}
+
+.form select option {
+  background: #3f3f3f;
+  color: #f8fafc;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
 }
 
 textarea {
@@ -77,21 +127,29 @@ button:hover {
 .card {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  align-items: flex-start;
+  gap: 18px;
   background: white;
-  padding: 18px;
-  border-radius: 14px;
+  padding: 18px 20px;
+  border-radius: 16px;
   margin-bottom: 12px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.card > div {
+  text-align: left;
 }
 
 .card h3 {
   margin: 0 0 4px;
+  font-size: 20px;
+  line-height: 1.2;
 }
 
 .card p {
-  margin: 0 0 8px;
-  color: #52525b;
+  margin: 0 0 6px;
+  color: #3f3f46;
+  line-height: 1.4;
 }
 
 .card span {
@@ -103,8 +161,8 @@ button:hover {
 }
 
 .card .date {
-  margin-top: 10px;
-  margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 6px;
   font-size: 14px;
   font-weight: 600;
   color: #3f3f46;
@@ -124,16 +182,26 @@ button:hover {
 }
 
 .clear-search {
-  background: #52525b;
-  white-space: nowrap;
+  width: 44px;
+  padding: 0;
+  background: #e4e4e7;
+  color: #3f3f46;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.clear-search:hover {
+  background: #d4d4d8;
+  opacity: 1;
 }
 
 .job-link {
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  margin: 4px 0 10px;
-  padding: 8px 12px;
+  margin: 2px 0 8px;
+  padding: 7px 10px;
   border-radius: 999px;
   background: #eff6ff;
   color: #1d4ed8;
@@ -149,12 +217,23 @@ button:hover {
 }
 
 .notes {
-  margin-top: 10px !important;
+  margin-top: 6px !important;
 }
 
 .delete {
-  background: #991b1b;
-  align-self: start;
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.delete:hover {
+  background: #fee2e2;
+  opacity: 1;
 }
 
 .empty {
@@ -173,6 +252,17 @@ button:hover {
 }
 
 .filter select {
+  appearance: none;
+  background-color: white;
+  color: #18181b;
+  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 7.5L10 12.5L15 7.5' stroke='%2318181b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 42px;
+}
+
+.filter select option {
   background: white;
   color: #18181b;
 }
@@ -180,4 +270,34 @@ button:hover {
 .clear {
   margin-bottom: 16px;
   background: #3f3f46;
+}
+
+.clear:hover {
+  background: #27272a;
+  opacity: 1;
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: min(100% - 32px, 960px);
+    padding: 32px 0;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .form input[type="url"],
+  .form textarea,
+  .form button {
+    grid-column: auto;
+  }
+  .card {
+    flex-direction: column;
+  }
+
+  .delete {
+    width: 100%;
+  }
 }
