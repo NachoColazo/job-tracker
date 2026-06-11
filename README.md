@@ -4,6 +4,10 @@ A simple React + TypeScript application to track job applications while rebuildi
 
 This project was built as part of my programming comeback journey. The goal was to practice modern frontend development concepts by creating a real, useful, and progressively improved application.
 
+## Live Demo
+
+[View the live app](https://job-tracker-gray-mu.vercel.app)
+
 ## Features
 
 - Add job applications with:
