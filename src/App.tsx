@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import ApplicationCard from "./components/ApplicationCard";
 import ApplicationForm from "./components/ApplicationForm";
 import FilterControls from "./components/FilterControls";
-import type { JobApplication, StatusFilter } from "./types";
+import type { JobApplication, SortOption, StatusFilter } from "./types";
 import "./App.css";
 
 function App() {
@@ -29,6 +29,11 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
 
   /**
+   * Controls how the visible applications are sorted.
+   */
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
+
+  /**
    * Persist applications every time the list changes.
    * This keeps the data available after refreshing the page.
    */
@@ -39,18 +44,44 @@ function App() {
   /**
    * Derived data: this does not need its own state.
    * It is calculated from the current applications, selected status filter,
-   * and search text.
+   * search text, and selected sort option.
    */
-  const filteredApplications = applications.filter((application) => {
-    const matchesStatus =
-      statusFilter === "All" || application.status === statusFilter;
+  const filteredApplications = applications
+    .filter((application) => {
+      const matchesStatus =
+        statusFilter === "All" || application.status === statusFilter;
 
-    const matchesSearch =
-      application.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      application.position.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch =
+        application.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        application.position.toLowerCase().includes(searchTerm.toLowerCase());
 
-    return matchesStatus && matchesSearch;
-  });
+      return matchesStatus && matchesSearch;
+    })
+    .sort((firstApplication, secondApplication) => {
+      if (!firstApplication.dateApplied && !secondApplication.dateApplied) {
+        return 0;
+      }
+
+      if (!firstApplication.dateApplied) {
+        return 1;
+      }
+
+      if (!secondApplication.dateApplied) {
+        return -1;
+      }
+
+      const firstDateValue = Number(
+        firstApplication.dateApplied.split("-").join(""),
+      );
+
+      const secondDateValue = Number(
+        secondApplication.dateApplied.split("-").join(""),
+      );
+
+      return sortOption === "newest"
+        ? secondDateValue - firstDateValue
+        : firstDateValue - secondDateValue;
+    });
 
   /**
    * Adds a new application to the top of the list.
@@ -100,8 +131,10 @@ function App() {
         <FilterControls
           searchTerm={searchTerm}
           statusFilter={statusFilter}
+          sortOption={sortOption}
           onSearchChange={setSearchTerm}
           onStatusFilterChange={setStatusFilter}
+          onSortChange={setSortOption}
         />
 
         {applications.length > 0 && (

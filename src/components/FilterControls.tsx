@@ -1,25 +1,31 @@
-import type { StatusFilter } from "../types";
+import type { SortOption, StatusFilter } from "../types";
 
 /**
- * Props needed to render and control the search bar and status filter.
+ * Props needed to render and control the search bar, status filter,
+ * and sorting option.
  * The state still lives in App, but this component renders the controls.
  */
 type FilterControlsProps = {
   searchTerm: string;
   statusFilter: StatusFilter;
+  sortOption: SortOption;
   onSearchChange: (value: string) => void;
   onStatusFilterChange: (value: StatusFilter) => void;
+  onSortChange: (value: SortOption) => void;
 };
 
 /**
- * Displays the search input, clear search button, and status filter.
+ * Displays the search input, clear search button, status filter,
+ * and date sorting control.
  * This component is controlled by App through props.
  */
 function FilterControls({
   searchTerm,
   statusFilter,
+  sortOption,
   onSearchChange,
   onStatusFilterChange,
+  onSortChange,
 }: FilterControlsProps) {
   return (
     <>
@@ -61,6 +67,19 @@ function FilterControls({
           <option value="Rejected">Rejected</option>
           <option value="Offer">Offer</option>
           <option value="Saved">Saved</option>
+        </select>
+      </div>
+
+      <div className="filter">
+        <label htmlFor="sort-option">Sort by date</label>
+
+        <select
+          id="sort-option"
+          value={sortOption}
+          onChange={(event) => onSortChange(event.target.value as SortOption)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
         </select>
       </div>
     </>

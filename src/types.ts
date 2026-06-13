@@ -18,3 +18,8 @@ export type JobApplication = {
  * "All" is used only for filtering and is not a real application status.
  */
 export type StatusFilter = "All" | JobApplication["status"];
+
+/**
+ * Represents the available sorting options for the applications list.
+ */
+export type SortOption = "newest" | "oldest";
