@@ -117,8 +117,11 @@ function App() {
   return (
     <main className="container">
       <section className="hero">
-        <h1>Programming Comeback Tracker</h1>
-        <p>Small steps every day to get back into tech.</p>
+        <h1>Job Application Tracker</h1>
+        <p>
+          Track job applications, statuses, dates, links, and notes in one
+          place.
+        </p>
       </section>
 
       <ApplicationForm onAddApplication={addApplication} />
@@ -143,8 +146,12 @@ function App() {
           </button>
         )}
 
-        {filteredApplications.length === 0 ? (
-          <p className="empty">No applications match your filters.</p>
+        {applications.length === 0 ? (
+          <p className="empty">
+            No applications yet. Add your first job application above.
+          </p>
+        ) : filteredApplications.length === 0 ? (
+          <p className="empty">No applications match your current filters.</p>
         ) : (
           filteredApplications.map((application) => (
             <ApplicationCard

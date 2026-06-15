@@ -38,7 +38,10 @@ function ApplicationCard({ application, onDelete }: ApplicationCardProps) {
       <div>
         <h3>{application.company}</h3>
         <p>{application.position}</p>
-        <span>{application.status}</span>
+
+        <span className={`status status-${application.status.toLowerCase()}`}>
+          {application.status}
+        </span>
 
         {application.dateApplied && (
           <p className="date">
@@ -53,7 +56,7 @@ function ApplicationCard({ application, onDelete }: ApplicationCardProps) {
             target="_blank"
             rel="noreferrer"
           >
-            View job posting
+            View posting ↗
           </a>
         )}
 
