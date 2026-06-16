@@ -1,3 +1,4 @@
+import type { TranslationContent } from "../translations";
 import type { SortOption, StatusFilter } from "../types";
 
 /**
@@ -9,6 +10,9 @@ type FilterControlsProps = {
   searchTerm: string;
   statusFilter: StatusFilter;
   sortOption: SortOption;
+  filterText: TranslationContent["filters"];
+  statusFilterLabels: TranslationContent["statusFilterLabels"];
+  sortLabels: TranslationContent["sortLabels"];
   onSearchChange: (value: string) => void;
   onStatusFilterChange: (value: StatusFilter) => void;
   onSortChange: (value: SortOption) => void;
@@ -23,6 +27,9 @@ function FilterControls({
   searchTerm,
   statusFilter,
   sortOption,
+  filterText,
+  statusFilterLabels,
+  sortLabels,
   onSearchChange,
   onStatusFilterChange,
   onSortChange,
@@ -33,7 +40,7 @@ function FilterControls({
         <input
           className="search"
           type="text"
-          placeholder="Search by company or position"
+          placeholder={filterText.searchPlaceholder}
           value={searchTerm}
           onChange={(event) => onSearchChange(event.target.value)}
         />
@@ -43,8 +50,8 @@ function FilterControls({
             className="clear-search"
             type="button"
             onClick={() => onSearchChange("")}
-            aria-label="Clear search"
-            title="Clear search"
+            aria-label={filterText.clearSearchLabel}
+            title={filterText.clearSearchLabel}
           >
             ×
           </button>
@@ -52,7 +59,7 @@ function FilterControls({
       </div>
 
       <div className="filter">
-        <label htmlFor="status-filter">Filter by status</label>
+        <label htmlFor="status-filter">{filterText.filterLabel}</label>
 
         <select
           id="status-filter"
@@ -61,25 +68,25 @@ function FilterControls({
             onStatusFilterChange(event.target.value as StatusFilter)
           }
         >
-          <option value="All">All</option>
-          <option value="Applied">Applied</option>
-          <option value="Interview">Interview</option>
-          <option value="Rejected">Rejected</option>
-          <option value="Offer">Offer</option>
-          <option value="Saved">Saved</option>
+          <option value="All">{statusFilterLabels.All}</option>
+          <option value="Applied">{statusFilterLabels.Applied}</option>
+          <option value="Interview">{statusFilterLabels.Interview}</option>
+          <option value="Rejected">{statusFilterLabels.Rejected}</option>
+          <option value="Offer">{statusFilterLabels.Offer}</option>
+          <option value="Saved">{statusFilterLabels.Saved}</option>
         </select>
       </div>
 
       <div className="filter">
-        <label htmlFor="sort-option">Sort by date</label>
+        <label htmlFor="sort-option">{filterText.sortLabel}</label>
 
         <select
           id="sort-option"
           value={sortOption}
           onChange={(event) => onSortChange(event.target.value as SortOption)}
         >
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+          <option value="newest">{sortLabels.newest}</option>
+          <option value="oldest">{sortLabels.oldest}</option>
         </select>
       </div>
     </>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import ApplicationCard from "./components/ApplicationCard";
 import ApplicationForm from "./components/ApplicationForm";
 import FilterControls from "./components/FilterControls";
+import { translations, type Language } from "./translations";
 import type { JobApplication, SortOption, StatusFilter } from "./types";
 import "./App.css";
 
@@ -15,6 +16,14 @@ function App() {
 
     return savedApplications ? JSON.parse(savedApplications) : [];
   });
+
+  const [language, setLanguage] = useState<Language>(() => {
+    const savedLanguage = localStorage.getItem("job-tracker-language");
+
+    return savedLanguage === "es" ? "es" : "en";
+  });
+
+  const t = translations[language];
 
   /**
    * Controls which applications are visible in the list.
@@ -32,6 +41,10 @@ function App() {
    * Controls how the visible applications are sorted.
    */
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+
+  useEffect(() => {
+    localStorage.setItem("job-tracker-language", language);
+  }, [language]);
 
   /**
    * Persist applications every time the list changes.
@@ -109,32 +122,53 @@ function App() {
    * This prevents accidentally deleting all saved applications.
    */
   function clearAllApplications() {
-    if (window.confirm("Are you sure you want to clear all applications?")) {
+    if (window.confirm(t.list.clearAllConfirm)) {
       setApplications([]);
     }
   }
 
+  function toggleLanguage() {
+    setLanguage((currentLanguage) => (currentLanguage === "en" ? "es" : "en"));
+  }
+
   return (
-    <main className="container">
+    <main className="container" lang={language}>
       <section className="hero">
-        <h1>Job Application Tracker</h1>
-        <p>
-          Track job applications, statuses, dates, links, and notes in one
-          place.
-        </p>
+        <div className="hero-actions">
+          <button
+            className={`language-toggle language-toggle-${language}`}
+            onClick={toggleLanguage}
+            type="button"
+            aria-label="Toggle language"
+          >
+            <span>EN</span>
+            <span>ES</span>
+          </button>
+        </div>
+
+        <h1>{t.title}</h1>
+        <p>{t.subtitle}</p>
       </section>
 
-      <ApplicationForm onAddApplication={addApplication} />
+      <ApplicationForm
+        onAddApplication={addApplication}
+        formText={t.form}
+        statusLabels={t.statusLabels}
+      />
 
       <section className="list">
         <h2>
-          Applications: {filteredApplications.length} of {applications.length}
+          {t.list.applicationsCount}: {filteredApplications.length} {t.list.of}{" "}
+          {applications.length}
         </h2>
 
         <FilterControls
           searchTerm={searchTerm}
           statusFilter={statusFilter}
           sortOption={sortOption}
+          filterText={t.filters}
+          statusFilterLabels={t.statusFilterLabels}
+          sortLabels={t.sortLabels}
           onSearchChange={setSearchTerm}
           onStatusFilterChange={setStatusFilter}
           onSortChange={setSortOption}
@@ -142,21 +176,21 @@ function App() {
 
         {applications.length > 0 && (
           <button className="clear" onClick={clearAllApplications}>
-            Clear all
+            {t.list.clearAll}
           </button>
         )}
 
         {applications.length === 0 ? (
-          <p className="empty">
-            No applications yet. Add your first job application above.
-          </p>
+          <p className="empty">{t.list.empty}</p>
         ) : filteredApplications.length === 0 ? (
-          <p className="empty">No applications match your current filters.</p>
+          <p className="empty">{t.list.noMatches}</p>
         ) : (
           filteredApplications.map((application) => (
             <ApplicationCard
               key={application.id}
               application={application}
+              cardText={t.card}
+              statusLabels={t.statusLabels}
               onDelete={deleteApplication}
             />
           ))

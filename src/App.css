@@ -26,6 +26,63 @@ body {
   text-align: center;
 }
 
+.hero-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.language-toggle {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 62px;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #3f3f46;
+  background: #e4e4e7;
+  color: #18181b;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.language-toggle span {
+  position: relative;
+  z-index: 1;
+  padding: 6px 8px;
+  line-height: 1;
+}
+
+.language-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.language-toggle-en::before {
+  background: linear-gradient(135deg, #27272a 0 50%, #e4e4e7 50% 100%);
+}
+
+.language-toggle-es::before {
+  background: linear-gradient(135deg, #e4e4e7 0 50%, #27272a 50% 100%);
+}
+
+.language-toggle-en span:first-child,
+.language-toggle-es span:last-child {
+  color: white;
+}
+
+.language-toggle-en span:last-child,
+.language-toggle-es span:first-child {
+  color: #18181b;
+}
+
+.language-toggle:hover {
+  opacity: 0.9;
+}
+
 .hero h1 {
   margin: 0 0 10px;
   font-size: clamp(32px, 5vw, 44px);
@@ -340,6 +397,7 @@ button:hover {
   .form button {
     grid-column: auto;
   }
+
   .card {
     flex-direction: column;
   }

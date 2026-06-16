@@ -1,4 +1,5 @@
 import { useState, type SyntheticEvent } from "react";
+import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
 
 /**
@@ -7,9 +8,15 @@ import type { JobApplication } from "../types";
  */
 type ApplicationFormProps = {
   onAddApplication: (application: JobApplication) => void;
+  formText: TranslationContent["form"];
+  statusLabels: TranslationContent["statusLabels"];
 };
 
-function ApplicationForm({ onAddApplication }: ApplicationFormProps) {
+function ApplicationForm({
+  onAddApplication,
+  formText,
+  statusLabels,
+}: ApplicationFormProps) {
   /**
    * Form state.
    * Each input is controlled by React, which means the displayed value
@@ -24,7 +31,7 @@ function ApplicationForm({ onAddApplication }: ApplicationFormProps) {
 
   /**
    * Creates a new application from the current form values
-   * and adds it to the top of the list.
+   * and sends it to App so it can be stored in the main applications list.
    */
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -49,11 +56,12 @@ function ApplicationForm({ onAddApplication }: ApplicationFormProps) {
     setJobLink("");
     setNotes("");
   }
+
   return (
     <form className="form" onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="Company"
+        placeholder={formText.companyPlaceholder}
         value={company}
         onChange={(event) => setCompany(event.target.value)}
         required
@@ -61,7 +69,7 @@ function ApplicationForm({ onAddApplication }: ApplicationFormProps) {
 
       <input
         type="text"
-        placeholder="Position"
+        placeholder={formText.positionPlaceholder}
         value={position}
         onChange={(event) => setPosition(event.target.value)}
         required
@@ -73,33 +81,35 @@ function ApplicationForm({ onAddApplication }: ApplicationFormProps) {
           setStatus(event.target.value as JobApplication["status"])
         }
       >
-        <option value="Applied">Applied</option>
-        <option value="Interview">Interview</option>
-        <option value="Rejected">Rejected</option>
-        <option value="Offer">Offer</option>
-        <option value="Saved">Saved</option>
+        <option value="Applied">{statusLabels.Applied}</option>
+        <option value="Interview">{statusLabels.Interview}</option>
+        <option value="Rejected">{statusLabels.Rejected}</option>
+        <option value="Offer">{statusLabels.Offer}</option>
+        <option value="Saved">{statusLabels.Saved}</option>
       </select>
 
       <input
         type="date"
         value={dateApplied}
         onChange={(event) => setDateApplied(event.target.value)}
+        aria-label={formText.dateLabel}
+        title={formText.dateLabel}
       />
 
       <input
         type="url"
-        placeholder="Job link"
+        placeholder={formText.jobLinkPlaceholder}
         value={jobLink}
         onChange={(event) => setJobLink(event.target.value)}
       />
 
       <textarea
-        placeholder="Notes"
+        placeholder={formText.notesPlaceholder}
         value={notes}
         onChange={(event) => setNotes(event.target.value)}
       />
 
-      <button type="submit">Add application</button>
+      <button type="submit">{formText.addButton}</button>
     </form>
   );
 }
