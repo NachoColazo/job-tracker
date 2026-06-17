@@ -11,6 +11,7 @@ export type JobApplication = {
   dateApplied: string;
   jobLink: string;
   notes: string;
+  rating?: number;
 };
 
 /**

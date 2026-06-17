@@ -32,6 +32,7 @@ function ApplicationForm({
   const [position, setPosition] = useState("");
   const [status, setStatus] = useState<JobApplication["status"]>("Applied");
   const [dateApplied, setDateApplied] = useState("");
+  const [rating, setRating] = useState("");
   const [jobLink, setJobLink] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -43,6 +44,7 @@ function ApplicationForm({
     setPosition("");
     setStatus("Applied");
     setDateApplied("");
+    setRating("");
     setJobLink("");
     setNotes("");
   }
@@ -57,6 +59,7 @@ function ApplicationForm({
       setPosition(editingApplication.position);
       setStatus(editingApplication.status);
       setDateApplied(editingApplication.dateApplied);
+      setRating(String(editingApplication.rating ?? ""));
       setJobLink(editingApplication.jobLink);
       setNotes(editingApplication.notes);
     } else {
@@ -77,6 +80,7 @@ function ApplicationForm({
       position,
       status,
       dateApplied,
+      rating: rating ? Number(rating) : undefined,
       jobLink,
       notes,
     };
@@ -109,6 +113,7 @@ function ApplicationForm({
       />
 
       <select
+        className="form-full"
         value={status}
         onChange={(event) =>
           setStatus(event.target.value as JobApplication["status"])
@@ -119,6 +124,24 @@ function ApplicationForm({
         <option value="Rejected">{statusLabels.Rejected}</option>
         <option value="Offer">{statusLabels.Offer}</option>
         <option value="Saved">{statusLabels.Saved}</option>
+      </select>
+
+      <select
+        value={rating}
+        onChange={(event) => setRating(event.target.value)}
+        aria-label={formText.ratingLabel}
+      >
+        <option value="">{formText.ratingLabel}</option>
+        <option value="1">1 / 10</option>
+        <option value="2">2 / 10</option>
+        <option value="3">3 / 10</option>
+        <option value="4">4 / 10</option>
+        <option value="5">5 / 10</option>
+        <option value="6">6 / 10</option>
+        <option value="7">7 / 10</option>
+        <option value="8">8 / 10</option>
+        <option value="9">9 / 10</option>
+        <option value="10">10 / 10</option>
       </select>
 
       <input

@@ -12,6 +12,7 @@ export type TranslationContent = {
     companyPlaceholder: string;
     positionPlaceholder: string;
     dateLabel: string;
+    ratingLabel: string;
     jobLinkPlaceholder: string;
     notesPlaceholder: string;
     addButton: string;
@@ -44,6 +45,7 @@ export type TranslationContent = {
     edit: string;
     delete: string;
     appliedOn: string;
+    rating: string;
     dateLocale: string;
   };
 };
@@ -58,6 +60,7 @@ export const translations: Record<Language, TranslationContent> = {
       companyPlaceholder: "Company",
       positionPlaceholder: "Position",
       dateLabel: "Date applied",
+      ratingLabel: "Personal rating",
       jobLinkPlaceholder: "Job posting link",
       notesPlaceholder: "Notes",
       addButton: "Add application",
@@ -108,6 +111,7 @@ export const translations: Record<Language, TranslationContent> = {
       edit: "Edit",
       delete: "Delete",
       appliedOn: "Applied on",
+      rating: "Rating",
       dateLocale: "en-US",
     },
   },
@@ -121,6 +125,7 @@ export const translations: Record<Language, TranslationContent> = {
       companyPlaceholder: "Empresa",
       positionPlaceholder: "Puesto",
       dateLabel: "Fecha de postulación",
+      ratingLabel: "Calificación personal",
       jobLinkPlaceholder: "Enlace de la vacante",
       notesPlaceholder: "Notas",
       addButton: "Agregar postulación",
@@ -171,6 +176,7 @@ export const translations: Record<Language, TranslationContent> = {
       edit: "Editar",
       delete: "Eliminar",
       appliedOn: "Postulado el",
+      rating: "Calificación",
       dateLocale: "es",
     },
   },

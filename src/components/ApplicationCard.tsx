@@ -54,6 +54,12 @@ function ApplicationCard({
           {statusLabels[application.status]}
         </span>
 
+        {application.rating && (
+          <p className="rating">
+            {cardText.rating}: <strong>{application.rating}/10</strong>
+          </p>
+        )}
+
         {application.dateApplied && (
           <p className="date">
             {cardText.appliedOn}:{" "}

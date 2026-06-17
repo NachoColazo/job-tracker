@@ -108,6 +108,10 @@ body {
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
+.form > .form-full {
+  grid-column: 1 / -1;
+}
+
 .form input[type="url"],
 .form textarea,
 .form button {
@@ -229,6 +233,18 @@ button:hover {
   font-size: 14px;
   font-weight: 600;
   color: #3f3f46;
+}
+
+.rating {
+  margin-top: 8px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #27272a;
+}
+
+.rating strong {
+  color: #18181b;
 }
 
 .status {
