@@ -15,6 +15,8 @@ export type TranslationContent = {
     jobLinkPlaceholder: string;
     notesPlaceholder: string;
     addButton: string;
+    updateButton: string;
+    cancelEditButton: string;
   };
 
   filters: {
@@ -39,6 +41,7 @@ export type TranslationContent = {
 
   card: {
     viewJobPosting: string;
+    edit: string;
     delete: string;
     appliedOn: string;
     dateLocale: string;
@@ -58,6 +61,8 @@ export const translations: Record<Language, TranslationContent> = {
       jobLinkPlaceholder: "Job posting link",
       notesPlaceholder: "Notes",
       addButton: "Add application",
+      updateButton: "Save changes",
+      cancelEditButton: "Cancel edit",
     },
 
     filters: {
@@ -100,6 +105,7 @@ export const translations: Record<Language, TranslationContent> = {
 
     card: {
       viewJobPosting: "View job posting ↗",
+      edit: "Edit",
       delete: "Delete",
       appliedOn: "Applied on",
       dateLocale: "en-US",
@@ -118,6 +124,8 @@ export const translations: Record<Language, TranslationContent> = {
       jobLinkPlaceholder: "Enlace de la vacante",
       notesPlaceholder: "Notas",
       addButton: "Agregar postulación",
+      updateButton: "Guardar cambios",
+      cancelEditButton: "Cancelar edición",
     },
 
     filters: {
@@ -160,6 +168,7 @@ export const translations: Record<Language, TranslationContent> = {
 
     card: {
       viewJobPosting: "Ver vacante ↗",
+      edit: "Editar",
       delete: "Eliminar",
       appliedOn: "Postulado el",
       dateLocale: "es",

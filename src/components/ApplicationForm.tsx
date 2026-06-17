@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useEffect, useState, type SyntheticEvent } from "react";
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
 
@@ -7,13 +7,19 @@ import type { JobApplication } from "../types";
  * App owns the applications list, so the form sends the new application up through this function.
  */
 type ApplicationFormProps = {
+  editingApplication: JobApplication | null;
   onAddApplication: (application: JobApplication) => void;
+  onUpdateApplication: (application: JobApplication) => void;
+  onCancelEdit: () => void;
   formText: TranslationContent["form"];
   statusLabels: TranslationContent["statusLabels"];
 };
 
 function ApplicationForm({
+  editingApplication,
   onAddApplication,
+  onUpdateApplication,
+  onCancelEdit,
   formText,
   statusLabels,
 }: ApplicationFormProps) {
@@ -30,14 +36,43 @@ function ApplicationForm({
   const [notes, setNotes] = useState("");
 
   /**
-   * Creates a new application from the current form values
-   * and sends it to App so it can be stored in the main applications list.
+   * Clears all form fields and returns the status to its default value.
+   */
+  function resetForm() {
+    setCompany("");
+    setPosition("");
+    setStatus("Applied");
+    setDateApplied("");
+    setJobLink("");
+    setNotes("");
+  }
+
+  /**
+   * When an application is selected for editing,
+   * fill the form with that application's current values.
+   */
+  useEffect(() => {
+    if (editingApplication) {
+      setCompany(editingApplication.company);
+      setPosition(editingApplication.position);
+      setStatus(editingApplication.status);
+      setDateApplied(editingApplication.dateApplied);
+      setJobLink(editingApplication.jobLink);
+      setNotes(editingApplication.notes);
+    } else {
+      resetForm();
+    }
+  }, [editingApplication]);
+
+  /**
+   * Creates a new application or updates the selected application,
+   * depending on whether the form is in add mode or edit mode.
    */
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const newApplication: JobApplication = {
-      id: Date.now(),
+    const applicationToSave: JobApplication = {
+      id: editingApplication ? editingApplication.id : Date.now(),
       company,
       position,
       status,
@@ -46,15 +81,13 @@ function ApplicationForm({
       notes,
     };
 
-    onAddApplication(newApplication);
+    if (editingApplication) {
+      onUpdateApplication(applicationToSave);
+    } else {
+      onAddApplication(applicationToSave);
+    }
 
-    // Reset the form after submitting.
-    setCompany("");
-    setPosition("");
-    setStatus("Applied");
-    setDateApplied("");
-    setJobLink("");
-    setNotes("");
+    resetForm();
   }
 
   return (
@@ -109,7 +142,15 @@ function ApplicationForm({
         onChange={(event) => setNotes(event.target.value)}
       />
 
-      <button type="submit">{formText.addButton}</button>
+      <button type="submit">
+        {editingApplication ? formText.updateButton : formText.addButton}
+      </button>
+
+      {editingApplication && (
+        <button className="cancel-edit" type="button" onClick={onCancelEdit}>
+          {formText.cancelEditButton}
+        </button>
+      )}
     </form>
   );
 }

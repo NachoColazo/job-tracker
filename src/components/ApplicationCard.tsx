@@ -10,6 +10,7 @@ type ApplicationCardProps = {
   application: JobApplication;
   cardText: TranslationContent["card"];
   statusLabels: TranslationContent["statusLabels"];
+  onEdit: (application: JobApplication) => void;
   onDelete: (id: number) => void;
 };
 
@@ -40,6 +41,7 @@ function ApplicationCard({
   application,
   cardText,
   statusLabels,
+  onEdit,
   onDelete,
 }: ApplicationCardProps) {
   return (
@@ -73,13 +75,23 @@ function ApplicationCard({
         {application.notes && <p className="notes">{application.notes}</p>}
       </div>
 
-      <button
-        className="delete"
-        type="button"
-        onClick={() => onDelete(application.id)}
-      >
-        {cardText.delete}
-      </button>
+      <div className="card-actions">
+        <button
+          className="edit"
+          type="button"
+          onClick={() => onEdit(application)}
+        >
+          {cardText.edit}
+        </button>
+
+        <button
+          className="delete"
+          type="button"
+          onClick={() => onDelete(application.id)}
+        >
+          {cardText.delete}
+        </button>
+      </div>
     </article>
   );
 }

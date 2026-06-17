@@ -17,6 +17,14 @@ function App() {
     return savedApplications ? JSON.parse(savedApplications) : [];
   });
 
+  /**
+   * Stores the application currently being edited.
+   * When this is null, the form is in "add" mode.
+   * When it has an application, the form is in "edit" mode.
+   */
+  const [editingApplication, setEditingApplication] =
+    useState<JobApplication | null>(null);
+
   const [language, setLanguage] = useState<Language>(() => {
     const savedLanguage = localStorage.getItem("job-tracker-language");
 
@@ -108,13 +116,48 @@ function App() {
   }
 
   /**
+   * Updates an existing application by replacing the item
+   * that has the same id as the edited application.
+   */
+  function updateApplication(updatedApplication: JobApplication) {
+    setApplications((currentApplications) =>
+      currentApplications.map((application) =>
+        application.id === updatedApplication.id
+          ? updatedApplication
+          : application,
+      ),
+    );
+
+    setEditingApplication(null);
+  }
+
+  /**
+   * Selects an application to edit and moves the user back to the form.
+   */
+  function startEditingApplication(application: JobApplication) {
+    setEditingApplication(application);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /**
+   * Leaves edit mode without saving changes.
+   */
+  function cancelEditingApplication() {
+    setEditingApplication(null);
+  }
+
+  /**
    * Removes one application by keeping every item
    * except the one that matches the selected id.
    */
   function deleteApplication(id: number) {
-    setApplications(
-      applications.filter((application) => application.id !== id),
+    setApplications((currentApplications) =>
+      currentApplications.filter((application) => application.id !== id),
     );
+
+    if (editingApplication?.id === id) {
+      setEditingApplication(null);
+    }
   }
 
   /**
@@ -124,6 +167,7 @@ function App() {
   function clearAllApplications() {
     if (window.confirm(t.list.clearAllConfirm)) {
       setApplications([]);
+      setEditingApplication(null);
     }
   }
 
@@ -151,7 +195,10 @@ function App() {
       </section>
 
       <ApplicationForm
+        editingApplication={editingApplication}
         onAddApplication={addApplication}
+        onUpdateApplication={updateApplication}
+        onCancelEdit={cancelEditingApplication}
         formText={t.form}
         statusLabels={t.statusLabels}
       />
@@ -191,6 +238,7 @@ function App() {
               application={application}
               cardText={t.card}
               statusLabels={t.statusLabels}
+              onEdit={startEditingApplication}
               onDelete={deleteApplication}
             />
           ))
