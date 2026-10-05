@@ -141,7 +141,16 @@ body {
   text-align: left;
 }
 
-.form-field input {
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #3f3f46;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
   width: 100%;
 }
 
@@ -330,11 +339,11 @@ button:hover {
 .search-row {
   display: flex;
   gap: 10px;
-  margin-bottom: 16px;
 }
 
 .search {
   flex: 1;
+  min-width: 0;
   background: white;
   color: #18181b;
   margin-bottom: 0;

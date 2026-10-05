@@ -36,26 +36,30 @@ function FilterControls({
 }: FilterControlsProps) {
   return (
     <>
-      <div className="search-row">
-        <input
-          className="search"
-          type="text"
-          placeholder={filterText.searchPlaceholder}
-          value={searchTerm}
-          onChange={(event) => onSearchChange(event.target.value)}
-        />
+      <div className="filter">
+        <label htmlFor="application-search">{filterText.searchLabel}</label>
+        <div className="search-row">
+          <input
+            id="application-search"
+            className="search"
+            type="text"
+            placeholder={filterText.searchPlaceholder}
+            value={searchTerm}
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
 
-        {searchTerm.length > 0 && (
-          <button
-            className="clear-search"
-            type="button"
-            onClick={() => onSearchChange("")}
-            aria-label={filterText.clearSearchLabel}
-            title={filterText.clearSearchLabel}
-          >
-            ×
-          </button>
-        )}
+          {searchTerm.length > 0 && (
+            <button
+              className="clear-search"
+              type="button"
+              onClick={() => onSearchChange("")}
+              aria-label={filterText.clearSearchLabel}
+              title={filterText.clearSearchLabel}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="filter">

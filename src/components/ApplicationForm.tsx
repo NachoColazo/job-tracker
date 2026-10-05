@@ -1,4 +1,4 @@
-import { useState, type SyntheticEvent } from "react";
+import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
 import { getValidJobUrl } from "../validation";
@@ -43,11 +43,22 @@ function ApplicationForm({
   const [jobLink, setJobLink] = useState(editingApplication?.jobLink ?? "");
   const [notes, setNotes] = useState(editingApplication?.notes ?? "");
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const companyInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editingApplication) {
+      // The keyed Edit form has mounted; synchronize focus with its DOM input.
+      companyInputRef.current?.focus({ preventScroll: true });
+    }
+  }, [editingApplication]);
 
   const trimmedCompany = company.trim();
   const trimmedPosition = position.trim();
   const trimmedJobLink = jobLink.trim();
   const validJobLink = trimmedJobLink === "" ? "" : getValidJobUrl(trimmedJobLink);
+  const companyInvalid = hasSubmitted && trimmedCompany === "";
+  const positionInvalid = hasSubmitted && trimmedPosition === "";
+  const jobLinkInvalid = hasSubmitted && validJobLink === null;
 
   /**
    * Clears all form fields and returns the status to its default value.
@@ -104,88 +115,120 @@ function ApplicationForm({
       onInvalid={() => setHasSubmitted(true)}
     >
       <div className="form-field">
+        <label htmlFor="application-company">{formText.companyLabel}</label>
         <input
+          id="application-company"
+          ref={companyInputRef}
           type="text"
           placeholder={formText.companyPlaceholder}
           value={company}
           onChange={(event) => setCompany(event.target.value)}
+          aria-invalid={companyInvalid}
+          aria-describedby={companyInvalid ? "application-company-error" : undefined}
           required
         />
-        {hasSubmitted && trimmedCompany === "" && (
-          <p className="form-error" role="alert">{formText.companyRequired}</p>
+        {companyInvalid && (
+          <p id="application-company-error" className="form-error" role="alert">
+            {formText.companyRequired}
+          </p>
         )}
       </div>
 
       <div className="form-field">
+        <label htmlFor="application-position">{formText.positionLabel}</label>
         <input
+          id="application-position"
           type="text"
           placeholder={formText.positionPlaceholder}
           value={position}
           onChange={(event) => setPosition(event.target.value)}
+          aria-invalid={positionInvalid}
+          aria-describedby={positionInvalid ? "application-position-error" : undefined}
           required
         />
-        {hasSubmitted && trimmedPosition === "" && (
-          <p className="form-error" role="alert">{formText.positionRequired}</p>
+        {positionInvalid && (
+          <p id="application-position-error" className="form-error" role="alert">
+            {formText.positionRequired}
+          </p>
         )}
       </div>
 
-      <select
-        className="form-full"
-        value={status}
-        onChange={(event) =>
-          setStatus(event.target.value as JobApplication["status"])
-        }
-      >
-        <option value="Applied">{statusLabels.Applied}</option>
-        <option value="Interview">{statusLabels.Interview}</option>
-        <option value="Rejected">{statusLabels.Rejected}</option>
-        <option value="Offer">{statusLabels.Offer}</option>
-        <option value="Saved">{statusLabels.Saved}</option>
-      </select>
+      <div className="form-field form-full">
+        <label htmlFor="application-status">{formText.statusLabel}</label>
+        <select
+          id="application-status"
+          value={status}
+          onChange={(event) =>
+            setStatus(event.target.value as JobApplication["status"])
+          }
+        >
+          <option value="Applied">{statusLabels.Applied}</option>
+          <option value="Interview">{statusLabels.Interview}</option>
+          <option value="Rejected">{statusLabels.Rejected}</option>
+          <option value="Offer">{statusLabels.Offer}</option>
+          <option value="Saved">{statusLabels.Saved}</option>
+        </select>
+      </div>
 
-      <select
-        value={rating}
-        onChange={(event) => setRating(event.target.value)}
-        aria-label={formText.ratingLabel}
-      >
-        <option value="">{formText.ratingLabel}</option>
-        <option value="1">1 / 10</option>
-        <option value="2">2 / 10</option>
-        <option value="3">3 / 10</option>
-        <option value="4">4 / 10</option>
-        <option value="5">5 / 10</option>
-        <option value="6">6 / 10</option>
-        <option value="7">7 / 10</option>
-        <option value="8">8 / 10</option>
-        <option value="9">9 / 10</option>
-        <option value="10">10 / 10</option>
-      </select>
+      <div className="form-field">
+        <label htmlFor="application-rating">{formText.ratingLabel}</label>
+        <select
+          id="application-rating"
+          value={rating}
+          onChange={(event) => setRating(event.target.value)}
+        >
+          <option value="">{formText.ratingLabel}</option>
+          <option value="1">1 / 10</option>
+          <option value="2">2 / 10</option>
+          <option value="3">3 / 10</option>
+          <option value="4">4 / 10</option>
+          <option value="5">5 / 10</option>
+          <option value="6">6 / 10</option>
+          <option value="7">7 / 10</option>
+          <option value="8">8 / 10</option>
+          <option value="9">9 / 10</option>
+          <option value="10">10 / 10</option>
+        </select>
+      </div>
 
-      <input
-        type="date"
-        value={dateApplied}
-        onChange={(event) => setDateApplied(event.target.value)}
-        aria-label={formText.dateLabel}
-        title={formText.dateLabel}
-      />
+      <div className="form-field">
+        <label htmlFor="application-date">{formText.dateLabel}</label>
+        <input
+          id="application-date"
+          type="date"
+          value={dateApplied}
+          onChange={(event) => setDateApplied(event.target.value)}
+          title={formText.dateLabel}
+        />
+      </div>
 
       <div className="form-field form-full">
+        <label htmlFor="application-job-link">{formText.jobLinkLabel}</label>
         <input
+          id="application-job-link"
           type="url"
           placeholder={formText.jobLinkPlaceholder}
           value={jobLink}
           onChange={(event) => setJobLink(event.target.value)}
+          aria-invalid={jobLinkInvalid}
+          aria-describedby={jobLinkInvalid ? "application-job-link-error" : undefined}
         />
-        {hasSubmitted && validJobLink === null && (
-          <p className="form-error" role="alert">{formText.jobLinkInvalid}</p>
+        {jobLinkInvalid && (
+          <p id="application-job-link-error" className="form-error" role="alert">
+            {formText.jobLinkInvalid}
+          </p>
         )}
       </div>
 
-      <textarea
-        placeholder={formText.notesPlaceholder}
-        value={notes}
-        onChange={(event) => setNotes(event.target.value)}
-      />
+      <div className="form-field form-full">
+        <label htmlFor="application-notes">{formText.notesLabel}</label>
+        <textarea
+          id="application-notes"
+          placeholder={formText.notesPlaceholder}
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
+        />
+      </div>
 
       <button type="submit">
         {editingApplication ? formText.updateButton : formText.addButton}

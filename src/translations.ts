@@ -9,6 +9,11 @@ export type TranslationContent = {
   subtitle: string;
 
   form: {
+    companyLabel: string;
+    positionLabel: string;
+    statusLabel: string;
+    jobLinkLabel: string;
+    notesLabel: string;
     companyPlaceholder: string;
     positionPlaceholder: string;
     dateLabel: string;
@@ -24,6 +29,7 @@ export type TranslationContent = {
   };
 
   filters: {
+    searchLabel: string;
     searchPlaceholder: string;
     filterLabel: string;
     sortLabel: string;
@@ -90,6 +96,11 @@ export const translations: Record<Language, TranslationContent> = {
     },
 
     form: {
+      companyLabel: "Company",
+      positionLabel: "Position",
+      statusLabel: "Status",
+      jobLinkLabel: "Job posting link",
+      notesLabel: "Notes",
       companyPlaceholder: "Company",
       positionPlaceholder: "Position",
       dateLabel: "Date applied",
@@ -105,6 +116,7 @@ export const translations: Record<Language, TranslationContent> = {
     },
 
     filters: {
+      searchLabel: "Search applications",
       searchPlaceholder: "Search by company or position",
       filterLabel: "Filter by status",
       sortLabel: "Sort by date",
@@ -177,6 +189,11 @@ export const translations: Record<Language, TranslationContent> = {
     },
 
     form: {
+      companyLabel: "Empresa",
+      positionLabel: "Puesto",
+      statusLabel: "Estado",
+      jobLinkLabel: "Enlace de la vacante",
+      notesLabel: "Notas",
       companyPlaceholder: "Empresa",
       positionPlaceholder: "Puesto",
       dateLabel: "Fecha de postulación",
@@ -192,6 +209,7 @@ export const translations: Record<Language, TranslationContent> = {
     },
 
     filters: {
+      searchLabel: "Buscar postulaciones",
       searchPlaceholder: "Buscar por empresa o puesto",
       filterLabel: "Filtrar por estado",
       sortLabel: "Ordenar por fecha",
