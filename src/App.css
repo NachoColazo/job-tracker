@@ -253,6 +253,9 @@ button:hover {
 }
 
 .card > div {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   text-align: left;
 }
 
@@ -266,14 +269,6 @@ button:hover {
   margin: 0 0 6px;
   color: #3f3f46;
   line-height: 1.4;
-}
-
-.card span {
-  display: inline-block;
-  padding: 4px 8px;
-  background: #e4e4e7;
-  border-radius: 999px;
-  font-size: 14px;
 }
 
 .card .date {
@@ -385,12 +380,14 @@ button:hover {
   text-decoration: underline;
 }
 
-.notes {
-  margin-top: 6px !important;
+.card .notes {
+  margin-top: 6px;
+  white-space: pre-wrap;
 }
 
 .card-actions {
   display: flex;
+  flex-shrink: 0;
   flex-direction: column;
   gap: 8px;
   align-self: flex-start;
