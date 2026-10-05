@@ -18,6 +18,9 @@ export type TranslationContent = {
     addButton: string;
     updateButton: string;
     cancelEditButton: string;
+    companyRequired: string;
+    positionRequired: string;
+    jobLinkInvalid: string;
   };
 
   filters: {
@@ -96,6 +99,9 @@ export const translations: Record<Language, TranslationContent> = {
       addButton: "Add application",
       updateButton: "Save changes",
       cancelEditButton: "Cancel edit",
+      companyRequired: "Enter a company name; spaces alone are not enough.",
+      positionRequired: "Enter a position; spaces alone are not enough.",
+      jobLinkInvalid: "Enter a valid job URL using http:// or https://, or leave it empty.",
     },
 
     filters: {
@@ -180,6 +186,9 @@ export const translations: Record<Language, TranslationContent> = {
       addButton: "Agregar postulación",
       updateButton: "Guardar cambios",
       cancelEditButton: "Cancelar edición",
+      companyRequired: "Ingresa el nombre de la empresa; no puede contener solo espacios.",
+      positionRequired: "Ingresa un puesto; no puede contener solo espacios.",
+      jobLinkInvalid: "Ingresa una URL de la vacante válida con http:// o https://, o deja el campo vacío.",
     },
 
     filters: {

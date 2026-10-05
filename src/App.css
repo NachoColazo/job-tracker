@@ -136,6 +136,22 @@ body {
   grid-column: 1 / -1;
 }
 
+.form-field {
+  min-width: 0;
+  text-align: left;
+}
+
+.form-field input {
+  width: 100%;
+}
+
+.form-error {
+  margin-top: 6px;
+  color: #b91c1c;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .form input[type="url"],
 .form textarea,
 .form button {

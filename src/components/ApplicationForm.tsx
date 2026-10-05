@@ -1,6 +1,7 @@
 import { useState, type SyntheticEvent } from "react";
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
+import { getValidJobUrl } from "../validation";
 
 /**
  * Props needed to create a new job application.
@@ -41,6 +42,12 @@ function ApplicationForm({
   const [rating, setRating] = useState(String(editingApplication?.rating ?? ""));
   const [jobLink, setJobLink] = useState(editingApplication?.jobLink ?? "");
   const [notes, setNotes] = useState(editingApplication?.notes ?? "");
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  const trimmedCompany = company.trim();
+  const trimmedPosition = position.trim();
+  const trimmedJobLink = jobLink.trim();
+  const validJobLink = trimmedJobLink === "" ? "" : getValidJobUrl(trimmedJobLink);
 
   /**
    * Clears all form fields and returns the status to its default value.
@@ -53,6 +60,7 @@ function ApplicationForm({
     setRating("");
     setJobLink("");
     setNotes("");
+    setHasSubmitted(false);
   }
 
   /**
@@ -61,15 +69,21 @@ function ApplicationForm({
    */
   function handleSubmit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
+    setHasSubmitted(true);
+
+    // Keep the draft unchanged and stop before calling either save callback.
+    if (trimmedCompany === "" || trimmedPosition === "" || validJobLink === null) {
+      return;
+    }
 
     const applicationToSave: JobApplication = {
       id: editingApplication ? editingApplication.id : Date.now(),
-      company,
-      position,
+      company: trimmedCompany,
+      position: trimmedPosition,
       status,
       dateApplied,
       rating: rating ? Number(rating) : undefined,
-      jobLink,
+      jobLink: validJobLink,
       notes,
     };
 
@@ -83,22 +97,37 @@ function ApplicationForm({
   }
 
   return (
-    <form className="form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        placeholder={formText.companyPlaceholder}
-        value={company}
-        onChange={(event) => setCompany(event.target.value)}
-        required
-      />
+    <form
+      className="form"
+      onSubmit={handleSubmit}
+      // Native validation can block submit first; still show our inline messages.
+      onInvalid={() => setHasSubmitted(true)}
+    >
+      <div className="form-field">
+        <input
+          type="text"
+          placeholder={formText.companyPlaceholder}
+          value={company}
+          onChange={(event) => setCompany(event.target.value)}
+          required
+        />
+        {hasSubmitted && trimmedCompany === "" && (
+          <p className="form-error" role="alert">{formText.companyRequired}</p>
+        )}
+      </div>
 
-      <input
-        type="text"
-        placeholder={formText.positionPlaceholder}
-        value={position}
-        onChange={(event) => setPosition(event.target.value)}
-        required
-      />
+      <div className="form-field">
+        <input
+          type="text"
+          placeholder={formText.positionPlaceholder}
+          value={position}
+          onChange={(event) => setPosition(event.target.value)}
+          required
+        />
+        {hasSubmitted && trimmedPosition === "" && (
+          <p className="form-error" role="alert">{formText.positionRequired}</p>
+        )}
+      </div>
 
       <select
         className="form-full"
@@ -140,12 +169,17 @@ function ApplicationForm({
         title={formText.dateLabel}
       />
 
-      <input
-        type="url"
-        placeholder={formText.jobLinkPlaceholder}
-        value={jobLink}
-        onChange={(event) => setJobLink(event.target.value)}
-      />
+      <div className="form-field form-full">
+        <input
+          type="url"
+          placeholder={formText.jobLinkPlaceholder}
+          value={jobLink}
+          onChange={(event) => setJobLink(event.target.value)}
+        />
+        {hasSubmitted && validJobLink === null && (
+          <p className="form-error" role="alert">{formText.jobLinkInvalid}</p>
+        )}
+      </div>
 
       <textarea
         placeholder={formText.notesPlaceholder}

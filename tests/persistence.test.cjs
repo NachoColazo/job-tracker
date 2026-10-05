@@ -23,7 +23,7 @@ require.extensions[".css"] = () => {};
 
 const { loadApplications, loadLanguage, saveApplications, saveLanguage } =
   require("../src/storage.ts");
-const { isJobApplicationList } = require("../src/validation.ts");
+const { isJobApplicationList, getValidJobUrl } = require("../src/validation.ts");
 const App = require("../src/App.tsx").default;
 const applicationsKey = "job-applications";
 const languageKey = "job-tracker-language";
@@ -194,5 +194,38 @@ test("App renders with storage blocked instead of crashing", () => {
   assert.match(html, /Storage notice/);
   assert.match(html, /Saved applications could not be read/);
   assert.match(html, /language preference could not be read/);
+  assert.equal(writes.length, 0);
+});
+
+test("job URL validation normalizes web links and rejects other protocols", () => {
+  for (const [input, expected] of [
+    ["https://example.com/jobs/1", "https://example.com/jobs/1"],
+    ["http://example.com", "http://example.com/"],
+    ["  HTTPS://EXAMPLE.COM/jobs  ", "https://example.com/jobs"],
+    ["", null],
+    ["not-a-url", null],
+    ["https://", null],
+    ["/jobs/1", null],
+    ["ftp://example.com/jobs", null],
+    ["javascript:alert(1)", null],
+    ["data:text/html,<script>alert(1)</script>", null],
+  ]) {
+    assert.equal(getValidJobUrl(input), expected, input);
+  }
+});
+
+test("legacy invalid links are hidden without discarding stored applications", () => {
+  for (const jobLink of ["ftp://example.com/jobs", "javascript:alert(1)", "not-a-url", ""]) {
+    const raw = JSON.stringify([{ ...validApplication, jobLink }]);
+    values.set(applicationsKey, raw);
+    const html = renderToString(React.createElement(App));
+    assert.match(html, /Acme/);
+    assert.doesNotMatch(html, /class="job-link"/);
+    assert.doesNotMatch(html, /Storage notice/);
+    assert.equal(values.get(applicationsKey), raw);
+  }
+  values.set(applicationsKey, JSON.stringify([validApplication]));
+  const html = renderToString(React.createElement(App));
+  assert.match(html, /class="job-link" href="https:\/\/example.com\/jobs\/1"/);
   assert.equal(writes.length, 0);
 });

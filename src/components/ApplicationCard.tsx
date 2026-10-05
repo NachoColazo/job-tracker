@@ -1,5 +1,6 @@
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
+import { getValidJobUrl } from "../validation";
 
 /**
  * Props needed to render a single job application card.
@@ -44,6 +45,9 @@ function ApplicationCard({
   onEdit,
   onDelete,
 }: ApplicationCardProps) {
+  // Older stored applications can contain links the current form would reject.
+  const validJobLink = getValidJobUrl(application.jobLink);
+
   return (
     <article className="card">
       <div>
@@ -67,10 +71,10 @@ function ApplicationCard({
           </p>
         )}
 
-        {application.jobLink && (
+        {validJobLink && (
           <a
             className="job-link"
-            href={application.jobLink}
+            href={validJobLink}
             target="_blank"
             rel="noreferrer"
           >

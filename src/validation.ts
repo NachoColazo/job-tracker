@@ -1,5 +1,15 @@
 import type { JobApplication } from "./types";
 
+/** Return a normalized web URL, or null for malformed/unsupported links. */
+export function getValidJobUrl(value: string): string | null {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Accept an empty optional date or a real calendar date in YYYY-MM-DD format. */
 function isValidDate(value: string): boolean {
   if (value === "") return true;
