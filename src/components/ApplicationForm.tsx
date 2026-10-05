@@ -1,4 +1,4 @@
-import { useEffect, useState, type SyntheticEvent } from "react";
+import { useState, type SyntheticEvent } from "react";
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
 
@@ -25,16 +25,22 @@ function ApplicationForm({
 }: ApplicationFormProps) {
   /**
    * Form state.
+   * App changes the form's key when switching between add mode and applications.
+   * Each mount starts with the selected application's values or empty defaults.
    * Each input is controlled by React, which means the displayed value
    * always comes from state and updates through its setter function.
    */
-  const [company, setCompany] = useState("");
-  const [position, setPosition] = useState("");
-  const [status, setStatus] = useState<JobApplication["status"]>("Applied");
-  const [dateApplied, setDateApplied] = useState("");
-  const [rating, setRating] = useState("");
-  const [jobLink, setJobLink] = useState("");
-  const [notes, setNotes] = useState("");
+  const [company, setCompany] = useState(editingApplication?.company ?? "");
+  const [position, setPosition] = useState(editingApplication?.position ?? "");
+  const [status, setStatus] = useState<JobApplication["status"]>(
+    editingApplication?.status ?? "Applied",
+  );
+  const [dateApplied, setDateApplied] = useState(
+    editingApplication?.dateApplied ?? "",
+  );
+  const [rating, setRating] = useState(String(editingApplication?.rating ?? ""));
+  const [jobLink, setJobLink] = useState(editingApplication?.jobLink ?? "");
+  const [notes, setNotes] = useState(editingApplication?.notes ?? "");
 
   /**
    * Clears all form fields and returns the status to its default value.
@@ -48,24 +54,6 @@ function ApplicationForm({
     setJobLink("");
     setNotes("");
   }
-
-  /**
-   * When an application is selected for editing,
-   * fill the form with that application's current values.
-   */
-  useEffect(() => {
-    if (editingApplication) {
-      setCompany(editingApplication.company);
-      setPosition(editingApplication.position);
-      setStatus(editingApplication.status);
-      setDateApplied(editingApplication.dateApplied);
-      setRating(String(editingApplication.rating ?? ""));
-      setJobLink(editingApplication.jobLink);
-      setNotes(editingApplication.notes);
-    } else {
-      resetForm();
-    }
-  }, [editingApplication]);
 
   /**
    * Creates a new application or updates the selected application,

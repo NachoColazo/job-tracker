@@ -233,6 +233,7 @@ function App() {
       )}
 
       <ApplicationForm
+        key={editingApplication ? `edit-${editingApplication.id}` : "add"}
         editingApplication={editingApplication}
         onAddApplication={addApplication}
         onUpdateApplication={updateApplication}
