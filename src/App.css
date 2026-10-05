@@ -97,6 +97,30 @@ body {
   font-size: 18px;
 }
 
+.storage-notice {
+  margin-bottom: 24px;
+  padding: 16px;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+  background: #fffbeb;
+  color: #78350f;
+  text-align: left;
+}
+
+.storage-notice h2 {
+  color: inherit;
+  font-size: 18px;
+}
+
+.storage-notice p {
+  margin-top: 8px;
+}
+
+.storage-notice button {
+  margin-top: 12px;
+  max-width: 100%;
+}
+
 .form {
   display: grid;
   grid-template-columns: 1fr 1fr;

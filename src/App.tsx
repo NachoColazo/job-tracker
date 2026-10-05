@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ApplicationCard from "./components/ApplicationCard";
 import ApplicationForm from "./components/ApplicationForm";
 import FilterControls from "./components/FilterControls";
+import {
+  loadApplications,
+  loadLanguage,
+  saveApplications,
+  saveLanguage,
+} from "./storage";
 import { translations, type Language } from "./translations";
 import type { JobApplication, SortOption, StatusFilter } from "./types";
 import "./App.css";
 
 function App() {
-  /**
-   * Load saved applications from the browser when the app starts.
-   * localStorage only stores strings, so saved data must be parsed back into an array.
-   */
-  const [applications, setApplications] = useState<JobApplication[]>(() => {
-    const savedApplications = localStorage.getItem("job-applications");
-
-    return savedApplications ? JSON.parse(savedApplications) : [];
-  });
+  // Load once. Keep failed loads protected until the user confirms replacement.
+  const [applicationStorage, setApplicationStorage] = useState(loadApplications);
+  const { applications, issue: applicationIssue, canSave } = applicationStorage;
 
   /**
    * Stores the application currently being edited.
@@ -25,11 +25,8 @@ function App() {
   const [editingApplication, setEditingApplication] =
     useState<JobApplication | null>(null);
 
-  const [language, setLanguage] = useState<Language>(() => {
-    const savedLanguage = localStorage.getItem("job-tracker-language");
-
-    return savedLanguage === "es" ? "es" : "en";
-  });
+  const [languageStorage, setLanguageStorage] = useState(loadLanguage);
+  const { language, issue: languageIssue } = languageStorage;
 
   const t = translations[language];
 
@@ -50,17 +47,38 @@ function App() {
    */
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
-  useEffect(() => {
-    localStorage.setItem("job-tracker-language", language);
-  }, [language]);
-
   /**
-   * Persist applications every time the list changes.
-   * This keeps the data available after refreshing the page.
+   * Event handlers update the list and attempt to save it.
+   * Storage side effects stay outside React state updater functions.
+   * If saving fails, the updated list remains available in memory.
    */
-  useEffect(() => {
-    localStorage.setItem("job-applications", JSON.stringify(applications));
-  }, [applications]);
+  function changeApplications(nextApplications: JobApplication[]) {
+    const saved = canSave && saveApplications(nextApplications);
+    setApplicationStorage({
+      applications: nextApplications,
+      canSave,
+      issue: canSave ? (saved ? null : "write-error") : applicationIssue,
+    });
+  }
+
+  function retrySavingApplications() {
+    if (!canSave && !window.confirm(t.storage.replaceConfirm)) return;
+
+    const saved = saveApplications(applications);
+    setApplicationStorage({
+      applications,
+      canSave: canSave || saved,
+      issue: saved ? null : "write-error",
+    });
+  }
+
+  function persistLanguage(nextLanguage: Language) {
+    const saved = saveLanguage(nextLanguage);
+    setLanguageStorage({
+      language: nextLanguage,
+      issue: saved ? null : "write-error",
+    });
+  }
 
   /**
    * Derived data: this does not need its own state.
@@ -109,10 +127,7 @@ function App() {
    * The form creates the application object and App stores it in state.
    */
   function addApplication(newApplication: JobApplication) {
-    setApplications((currentApplications) => [
-      newApplication,
-      ...currentApplications,
-    ]);
+    changeApplications([newApplication, ...applications]);
   }
 
   /**
@@ -120,8 +135,8 @@ function App() {
    * that has the same id as the edited application.
    */
   function updateApplication(updatedApplication: JobApplication) {
-    setApplications((currentApplications) =>
-      currentApplications.map((application) =>
+    changeApplications(
+      applications.map((application) =>
         application.id === updatedApplication.id
           ? updatedApplication
           : application,
@@ -151,8 +166,8 @@ function App() {
    * except the one that matches the selected id.
    */
   function deleteApplication(id: number) {
-    setApplications((currentApplications) =>
-      currentApplications.filter((application) => application.id !== id),
+    changeApplications(
+      applications.filter((application) => application.id !== id),
     );
 
     if (editingApplication?.id === id) {
@@ -166,13 +181,13 @@ function App() {
    */
   function clearAllApplications() {
     if (window.confirm(t.list.clearAllConfirm)) {
-      setApplications([]);
+      changeApplications([]);
       setEditingApplication(null);
     }
   }
 
   function toggleLanguage() {
-    setLanguage((currentLanguage) => (currentLanguage === "en" ? "es" : "en"));
+    persistLanguage(language === "en" ? "es" : "en");
   }
 
   return (
@@ -193,6 +208,29 @@ function App() {
         <h1>{t.title}</h1>
         <p>{t.subtitle}</p>
       </section>
+
+      {(applicationIssue || languageIssue) && (
+        <section className="storage-notice" aria-label={t.storage.title}>
+          <h2>{t.storage.title}</h2>
+          {applicationIssue && (
+            <div>
+              <p role="alert">{t.storage.applications[applicationIssue]}</p>
+              {!canSave && <p>{t.storage.protectedData}</p>}
+              <button type="button" onClick={retrySavingApplications}>
+                {canSave ? t.storage.retryApplications : t.storage.replaceButton}
+              </button>
+            </div>
+          )}
+          {languageIssue && (
+            <div>
+              <p role="alert">{t.storage.language[languageIssue]}</p>
+              <button type="button" onClick={() => persistLanguage(language)}>
+                {t.storage.retryLanguage}
+              </button>
+            </div>
+          )}
+        </section>
+      )}
 
       <ApplicationForm
         editingApplication={editingApplication}
