@@ -23,8 +23,10 @@ require.extensions[".css"] = () => {};
 
 const { loadApplications, loadLanguage, saveApplications, saveLanguage } =
   require("../src/storage.ts");
-const { isJobApplicationList, getValidJobUrl } = require("../src/validation.ts");
+const { isJobApplicationList, getValidJobUrl, isValidDate } = require("../src/validation.ts");
 const App = require("../src/App.tsx").default;
+const ApplicationForm = require("../src/components/ApplicationForm.tsx").default;
+const ApplicationCard = require("../src/components/ApplicationCard.tsx").default;
 const applicationsKey = "job-applications";
 const languageKey = "job-tracker-language";
 const validApplication = {
@@ -37,6 +39,41 @@ const validApplication = {
   notes: "First line\nSecond line",
   rating: 8,
 };
+
+// Exercise the real components and event handlers without adding a DOM library.
+// Hook state survives each explicit render; DOM focus is checked in the browser.
+function createRenderer(t, Component, props = {}) {
+  const state = [];
+  return () => {
+    let index = 0;
+    const hooks = [
+      t.mock.method(React, "useState", (initial) => {
+        const slot = index++;
+        if (!(slot in state)) state[slot] = typeof initial === "function" ? initial() : initial;
+        return [state[slot], (next) => {
+          state[slot] = typeof next === "function" ? next(state[slot]) : next;
+        }];
+      }),
+      t.mock.method(React, "useRef", () => ({ current: null })),
+      t.mock.method(React, "useEffect", () => {}),
+    ];
+    try {
+      return Component(props);
+    } finally {
+      for (const hook of hooks) hook.mock.restore();
+    }
+  };
+}
+
+function findElement(element, predicate) {
+  if (!React.isValidElement(element)) return null;
+  if (predicate(element)) return element;
+  for (const child of React.Children.toArray(element.props.children)) {
+    const found = findElement(child, predicate);
+    if (found) return found;
+  }
+  return null;
+}
 
 let originalStorage;
 let values;
@@ -228,4 +265,118 @@ test("legacy invalid links are hidden without discarding stored applications", (
   const html = renderToString(React.createElement(App));
   assert.match(html, /class="job-link" href="https:\/\/example.com\/jobs\/1"/);
   assert.equal(writes.length, 0);
+});
+
+const dateCases = [
+  ["", true],
+  ["2026-10-06", true],
+  ["2024-02-29", true],
+  ["2000-02-29", true],
+  ["20266-10-06", false],
+  ["2026-02-29", false],
+  ["1900-02-29", false],
+  ["2026-04-31", false],
+  ["0000-01-01", false],
+  ["2026-13-01", false],
+];
+
+test("shared date validation agrees with persisted application validation", () => {
+  for (const [dateApplied, expected] of dateCases) {
+    assert.equal(isValidDate(dateApplied), expected, dateApplied);
+    assert.equal(isJobApplicationList([{ ...validApplication, dateApplied }]), expected, dateApplied);
+  }
+});
+
+for (const mode of ["Add", "Edit"]) {
+  for (const [dateApplied, accepted] of dateCases) {
+    test(`${mode} submit -> save -> reload: ${JSON.stringify(dateApplied)} is ${accepted ? "accepted" : "rejected"}`, (t) => {
+      const untouched = { ...validApplication, id: 2, company: "Untouched" };
+      const raw = JSON.stringify([validApplication, untouched]);
+      values.set(applicationsKey, raw);
+      const renderApp = createRenderer(t, App);
+      if (mode === "Edit") {
+        const card = findElement(renderApp(), (el) =>
+          el.type === ApplicationCard && el.props.application.id === validApplication.id);
+        const previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
+        Object.defineProperty(globalThis, "window", { configurable: true, value: { scrollTo() {} } });
+        try {
+          card.props.onEdit(validApplication);
+        } finally {
+          if (previousWindow) Object.defineProperty(globalThis, "window", previousWindow);
+          else delete globalThis.window;
+        }
+      }
+      const formProps = findElement(renderApp(), (el) => el.type === ApplicationForm).props;
+      const onAdd = t.mock.fn(formProps.onAddApplication);
+      const onUpdate = t.mock.fn(formProps.onUpdateApplication);
+      const renderForm = createRenderer(t, ApplicationForm, {
+        ...formProps, onAddApplication: onAdd, onUpdateApplication: onUpdate,
+      });
+      const field = (id) => findElement(renderForm(), (el) => el.props.id === id);
+      for (const [id, value] of [
+        ["application-company", "Draft company"],
+        ["application-position", "Draft position"],
+        ["application-notes", "Draft first line\nDraft second line"],
+        ["application-date", dateApplied],
+      ]) field(id).props.onChange({ target: { value } });
+
+      renderForm().props.onSubmit({ preventDefault() {} });
+      assert.equal(onAdd.mock.callCount(), accepted && mode === "Add" ? 1 : 0);
+      assert.equal(onUpdate.mock.callCount(), accepted && mode === "Edit" ? 1 : 0);
+      assert.equal(writes.length, accepted ? 1 : 0);
+
+      if (!accepted) {
+        assert.equal(values.get(applicationsKey), raw);
+        assert.equal(field("application-date").props.value, dateApplied);
+        assert.equal(field("application-company").props.value, "Draft company");
+        assert.equal(field("application-position").props.value, "Draft position");
+        assert.equal(field("application-notes").props.value, "Draft first line\nDraft second line");
+        assert.equal(field("application-date").props["aria-invalid"], true);
+        assert.equal(field("application-date").props["aria-describedby"], "application-date-error");
+        const error = field("application-date-error");
+        assert.equal(error.props.role, "alert");
+        assert.equal(error.props.children, formProps.formText.dateInvalid);
+        assert.deepEqual(loadApplications().applications, [validApplication, untouched]);
+        // Correcting the draft must also restore the complete save/reload path.
+        field("application-date").props.onChange({ target: { value: "2026-10-06" } });
+        assert.equal(field("application-date").props["aria-invalid"], false);
+        assert.equal(field("application-date").props["aria-describedby"], undefined);
+        assert.equal(field("application-date-error"), null);
+        renderForm().props.onSubmit({ preventDefault() {} });
+      }
+
+      const reloaded = loadApplications();
+      assert.equal(reloaded.issue, null);
+      assert.equal(reloaded.canSave, true);
+      assert.equal(reloaded.applications.length, mode === "Add" ? 3 : 2);
+      const saved = reloaded.applications.find((app) => app.company === "Draft company");
+      assert.equal(saved.dateApplied, accepted ? dateApplied : "2026-10-06");
+      assert.equal(saved.notes, "Draft first line\nDraft second line");
+      if (mode === "Edit") assert.equal(saved.id, validApplication.id);
+      else assert.deepEqual(reloaded.applications.find((app) => app.id === validApplication.id), validApplication);
+      assert.deepEqual(reloaded.applications.find((app) => app.id === untouched.id), untouched);
+      const html = renderToString(React.createElement(App));
+      assert.match(html, /Draft company/);
+      assert.doesNotMatch(html, /Storage notice/);
+    });
+  }
+}
+
+test("an incomplete native date is rejected; clearing it restores the optional empty date", (t) => {
+  const renderApp = createRenderer(t, App);
+  const formProps = findElement(renderApp(), (el) => el.type === ApplicationForm).props;
+  const onAdd = t.mock.fn(formProps.onAddApplication);
+  const renderForm = createRenderer(t, ApplicationForm, { ...formProps, onAddApplication: onAdd });
+  const field = (id) => findElement(renderForm(), (el) => el.props.id === id);
+  field("application-company").props.onChange({ target: { value: "Acme" } });
+  field("application-position").props.onChange({ target: { value: "Engineer" } });
+  field("application-date").props.onInput({ currentTarget: { validity: { badInput: true } } });
+  renderForm().props.onSubmit({ preventDefault() {} });
+  assert.equal(onAdd.mock.callCount(), 0);
+  assert.equal(field("application-date").props["aria-invalid"], true);
+  field("application-date").props.onInput({ currentTarget: { validity: { badInput: false } } });
+  assert.equal(field("application-date").props["aria-invalid"], false);
+  renderForm().props.onSubmit({ preventDefault() {} });
+  assert.equal(onAdd.mock.callCount(), 1);
+  assert.equal(loadApplications().applications[0].dateApplied, "");
 });

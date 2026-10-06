@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type SyntheticEvent } from "react";
 import type { TranslationContent } from "../translations";
 import type { JobApplication } from "../types";
-import { getValidJobUrl } from "../validation";
+import { getValidJobUrl, isValidDate } from "../validation";
 
 /**
  * Props needed to create a new job application.
@@ -39,6 +39,8 @@ function ApplicationForm({
   const [dateApplied, setDateApplied] = useState(
     editingApplication?.dateApplied ?? "",
   );
+  // A partial/invalid native date can have an empty value without being optional.
+  const [dateHasBadInput, setDateHasBadInput] = useState(false);
   const [rating, setRating] = useState(String(editingApplication?.rating ?? ""));
   const [jobLink, setJobLink] = useState(editingApplication?.jobLink ?? "");
   const [notes, setNotes] = useState(editingApplication?.notes ?? "");
@@ -56,8 +58,10 @@ function ApplicationForm({
   const trimmedPosition = position.trim();
   const trimmedJobLink = jobLink.trim();
   const validJobLink = trimmedJobLink === "" ? "" : getValidJobUrl(trimmedJobLink);
+  const validDate = isValidDate(dateApplied) && !dateHasBadInput;
   const companyInvalid = hasSubmitted && trimmedCompany === "";
   const positionInvalid = hasSubmitted && trimmedPosition === "";
+  const dateInvalid = hasSubmitted && !validDate;
   const jobLinkInvalid = hasSubmitted && validJobLink === null;
 
   /**
@@ -68,6 +72,7 @@ function ApplicationForm({
     setPosition("");
     setStatus("Applied");
     setDateApplied("");
+    setDateHasBadInput(false);
     setRating("");
     setJobLink("");
     setNotes("");
@@ -83,7 +88,12 @@ function ApplicationForm({
     setHasSubmitted(true);
 
     // Keep the draft unchanged and stop before calling either save callback.
-    if (trimmedCompany === "" || trimmedPosition === "" || validJobLink === null) {
+    if (
+      trimmedCompany === "" ||
+      trimmedPosition === "" ||
+      validJobLink === null ||
+      !validDate
+    ) {
       return;
     }
 
@@ -198,8 +208,17 @@ function ApplicationForm({
           type="date"
           value={dateApplied}
           onChange={(event) => setDateApplied(event.target.value)}
+          onInput={(event) => setDateHasBadInput(event.currentTarget.validity.badInput)}
+          onInvalid={() => setDateHasBadInput(true)}
+          aria-invalid={dateInvalid}
+          aria-describedby={dateInvalid ? "application-date-error" : undefined}
           title={formText.dateLabel}
         />
+        {dateInvalid && (
+          <p id="application-date-error" className="form-error" role="alert">
+            {formText.dateInvalid}
+          </p>
+        )}
       </div>
 
       <div className="form-field form-full">

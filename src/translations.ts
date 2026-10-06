@@ -25,6 +25,7 @@ export type TranslationContent = {
     cancelEditButton: string;
     companyRequired: string;
     positionRequired: string;
+    dateInvalid: string;
     jobLinkInvalid: string;
   };
 
@@ -112,6 +113,7 @@ export const translations: Record<Language, TranslationContent> = {
       cancelEditButton: "Cancel edit",
       companyRequired: "Enter a company name; spaces alone are not enough.",
       positionRequired: "Enter a position; spaces alone are not enough.",
+      dateInvalid: "Enter a valid date with a year from 0001 to 9999, or leave it empty.",
       jobLinkInvalid: "Enter a valid job URL using http:// or https://, or leave it empty.",
     },
 
@@ -205,6 +207,7 @@ export const translations: Record<Language, TranslationContent> = {
       cancelEditButton: "Cancelar edición",
       companyRequired: "Ingresa el nombre de la empresa; no puede contener solo espacios.",
       positionRequired: "Ingresa un puesto; no puede contener solo espacios.",
+      dateInvalid: "Ingresa una fecha válida con un año entre 0001 y 9999, o deja el campo vacío.",
       jobLinkInvalid: "Ingresa una URL de la vacante válida con http:// o https://, o deja el campo vacío.",
     },
 
