@@ -18,6 +18,7 @@ export type TranslationContent = {
     positionPlaceholder: string;
     dateLabel: string;
     ratingLabel: string;
+    ratingPlaceholder: string;
     jobLinkPlaceholder: string;
     notesPlaceholder: string;
     addButton: string;
@@ -102,12 +103,13 @@ export const translations: Record<Language, TranslationContent> = {
       statusLabel: "Status",
       jobLinkLabel: "Job posting link",
       notesLabel: "Notes",
-      companyPlaceholder: "Company",
-      positionPlaceholder: "Position",
+      companyPlaceholder: "Acme",
+      positionPlaceholder: "Frontend Developer",
       dateLabel: "Date applied",
       ratingLabel: "Personal rating",
-      jobLinkPlaceholder: "Job posting link",
-      notesPlaceholder: "Notes",
+      ratingPlaceholder: "Select rating",
+      jobLinkPlaceholder: "https://example.com/jobs/123",
+      notesPlaceholder: "Interview on Friday; prepare questions.",
       addButton: "Add application",
       updateButton: "Save changes",
       cancelEditButton: "Cancel edit",
@@ -196,12 +198,13 @@ export const translations: Record<Language, TranslationContent> = {
       statusLabel: "Estado",
       jobLinkLabel: "Enlace de la vacante",
       notesLabel: "Notas",
-      companyPlaceholder: "Empresa",
-      positionPlaceholder: "Puesto",
+      companyPlaceholder: "Acme",
+      positionPlaceholder: "Desarrollador frontend",
       dateLabel: "Fecha de postulación",
       ratingLabel: "Calificación personal",
-      jobLinkPlaceholder: "Enlace de la vacante",
-      notesPlaceholder: "Notas",
+      ratingPlaceholder: "Selecciona calificación",
+      jobLinkPlaceholder: "https://example.com/jobs/123",
+      notesPlaceholder: "Entrevista el viernes; preparar preguntas.",
       addButton: "Agregar postulación",
       updateButton: "Guardar cambios",
       cancelEditButton: "Cancelar edición",

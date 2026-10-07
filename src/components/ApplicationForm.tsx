@@ -187,7 +187,7 @@ function ApplicationForm({
           value={rating}
           onChange={(event) => setRating(event.target.value)}
         >
-          <option value="">{formText.ratingLabel}</option>
+          <option value="">{formText.ratingPlaceholder}</option>
           <option value="1">1 / 10</option>
           <option value="2">2 / 10</option>
           <option value="3">3 / 10</option>
@@ -222,7 +222,7 @@ function ApplicationForm({
       </div>
 
       <div className="form-field form-full">
-        <label htmlFor="application-job-link">{formText.jobLinkLabel}</label>
+        <label className="sr-only" htmlFor="application-job-link">{formText.jobLinkLabel}</label>
         <input
           id="application-job-link"
           type="url"
@@ -240,7 +240,7 @@ function ApplicationForm({
       </div>
 
       <div className="form-field form-full">
-        <label htmlFor="application-notes">{formText.notesLabel}</label>
+        <label className="sr-only" htmlFor="application-notes">{formText.notesLabel}</label>
         <textarea
           id="application-notes"
           placeholder={formText.notesPlaceholder}
